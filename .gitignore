@@ -1,0 +1,26 @@
+# Compilados de Java (Spring Boot)
+target/
+*.jar
+*.war
+.mvn/
+wrapper/
+
+# Dependencias de Node (React)
+node_modules/
+dist/
+build/
+.env
+.env.local
+
+# Docker
+docker/postgres/data/
+
+# IDEs (VS Code, IntelliJ)
+.vscode/
+.idea/
+*.swp
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db

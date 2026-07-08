@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: tfg-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: tfg_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/postgres/data:/var/lib/postgresql/data
+
+  backend:
+    # Comentamos el build por ahora porque el Dockerfile aún no está listo
+    # build: ./backend 
+    image: eclipse-temurin:17-jdk-alpine
+    container_name: tfg-backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - maven_data:/root/.m2
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/tfg_db
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=pass
+    command: ./mvnw spring-boot:run
+
+  frontend:
+    build: ./frontend
+    container_name: tfg-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    depends_on:
+      - backend
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: tfg-mailhog
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # Web UI port
+
+volumes:
+  maven_data:

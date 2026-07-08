@@ -1,0 +1,735 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Frontend - Especificación Técnica de Pruebas</title>
+    <style>
+        :root {
+            --primary: #3178c6;
+            --bg: #f8f9fa;
+            --sidebar-bg: #f4f5f7;
+            --text: #333;
+            --text-light: #666;
+            --border: #e1e4e8;
+            --pass: #28a745;
+            --fail: #dc3545;
+        }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; height: 100vh; color: var(--text); overflow: hidden; }
+        aside { width: 300px; background: var(--sidebar-bg); border-right: 1px solid var(--border); overflow-y: auto; padding: 20px; box-sizing: border-box; }
+        main { flex: 1; padding: 40px; overflow-y: auto; background: var(--bg); }
+        h1, h2, h3, h4 { margin-top: 0; }
+        .logo { font-size: 1.2em; font-weight: bold; color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        
+        .nav-pkg { margin-bottom: 15px; }
+        .nav-pkg-title { font-weight: bold; color: #444; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .nav-file { display: block; text-decoration: none; color: var(--text-light); font-size: 0.95em; padding: 4px 0 4px 10px; border-left: 2px solid transparent; }
+        .nav-file:hover { color: var(--primary); border-left-color: var(--primary); }
+        
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid var(--border); text-align: center; }
+        .card .value { font-size: 2em; font-weight: bold; margin: 10px 0; }
+        .card.total .value { color: var(--primary); }
+        .card.passed .value { color: var(--pass); }
+        .card.failed .value { color: var(--fail); }
+        
+        .file-section { background: white; margin-bottom: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); border: 1px solid var(--border); overflow: hidden; }
+        .file-header { background: #fff; padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .file-title { font-size: 1.2em; font-weight: 600; color: var(--primary); display: flex; align-items: center; gap: 8px;}
+        .file-status { padding: 4px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; }
+        .file-status.passed { background: #d4edda; color: #155724; }
+        .file-status.failed { background: #f8d7da; color: #721c24; }
+        
+        .suite { padding: 20px; border-bottom: 1px solid #f1f1f1; }
+        .suite:last-child { border-bottom: none; }
+        .suite-title { font-weight: bold; color: #555; margin-bottom: 15px; font-size: 1.1em; }
+        
+        .test-case { display: flex; align-items: baseline; padding: 8px 0; font-size: 0.95em; }
+        .test-icon { margin-right: 10px; font-size: 1.1em; }
+        .test-name { color: #444; }
+        .test-passed .test-icon { color: var(--pass); }
+        .test-failed .test-icon { color: var(--fail); }
+        
+        .package-header { margin: 40px 0 20px 0; font-size: 1.5em; color: #222; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <aside>
+        <div class="logo">🧪 Frontend Test Specs</div>
+        <div class="nav">
+<div class="nav-pkg"><div class="nav-pkg-title">context</div><a href="#context_AuthContext_test_tsx" class="nav-file">AuthContext.test.tsx</a><a href="#context_NotificationContext_test_tsx" class="nav-file">NotificationContext.test.tsx</a><a href="#context_SettingsContext_test_tsx" class="nav-file">SettingsContext.test.tsx</a><a href="#context_SnackbarContext_test_tsx" class="nav-file">SnackbarContext.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/analytics/reports/components</div><a href="#features_analytics_reports_components_ReportActionFooter_test_tsx" class="nav-file">ReportActionFooter.test.tsx</a><a href="#features_analytics_reports_components_ReportConfigSwitcher_test_tsx" class="nav-file">ReportConfigSwitcher.test.tsx</a><a href="#features_analytics_reports_components_ReportPreview_test_tsx" class="nav-file">ReportPreview.test.tsx</a><a href="#features_analytics_reports_components_ReportTypeSelector_test_tsx" class="nav-file">ReportTypeSelector.test.tsx</a><a href="#features_analytics_reports_components_ReportValidationDialog_test_tsx" class="nav-file">ReportValidationDialog.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/analytics/reports/components/configs</div><a href="#features_analytics_reports_components_configs_OccupancyConfig_test_tsx" class="nav-file">OccupancyConfig.test.tsx</a><a href="#features_analytics_reports_components_configs_SignaturesConfig_test_tsx" class="nav-file">SignaturesConfig.test.tsx</a><a href="#features_analytics_reports_components_configs_SubjectUsageConfig_test_tsx" class="nav-file">SubjectUsageConfig.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/analytics/reports/hooks</div><a href="#features_analytics_reports_hooks_useReports_test_tsx" class="nav-file">useReports.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/analytics/reports/pages</div><a href="#features_analytics_reports_pages_ReportsPage_test_tsx" class="nav-file">ReportsPage.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/auth/components</div><a href="#features_auth_components_RequireAuth_test_tsx" class="nav-file">RequireAuth.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/auth/hooks</div><a href="#features_auth_hooks_useLogin_test_ts" class="nav-file">useLogin.test.ts</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/auth/pages</div><a href="#features_auth_pages_LoginPage_test_tsx" class="nav-file">LoginPage.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/calendar/components</div><a href="#features_calendar_components_AgendaEvent_test_tsx" class="nav-file">AgendaEvent.test.tsx</a><a href="#features_calendar_components_CalendarDialogs_test_tsx" class="nav-file">CalendarDialogs.test.tsx</a><a href="#features_calendar_components_CalendarHeader_test_tsx" class="nav-file">CalendarHeader.test.tsx</a><a href="#features_calendar_components_CalendarSidebar_test_tsx" class="nav-file">CalendarSidebar.test.tsx</a><a href="#features_calendar_components_EventTooltip_test_tsx" class="nav-file">EventTooltip.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/calendar/hooks</div><a href="#features_calendar_hooks_useCalendarEvents_test_tsx" class="nav-file">useCalendarEvents.test.tsx</a><a href="#features_calendar_hooks_useCalendarNavigation_test_ts" class="nav-file">useCalendarNavigation.test.ts</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/calendar/pages</div><a href="#features_calendar_pages_CalendarView_test_tsx" class="nav-file">CalendarView.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/dashboard/components</div><a href="#features_dashboard_components_DashboardHeader_test_tsx" class="nav-file">DashboardHeader.test.tsx</a><a href="#features_dashboard_components_ExportAuditDialog_test_tsx" class="nav-file">ExportAuditDialog.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/dashboard/hooks</div><a href="#features_dashboard_hooks_useDashboardStats_test_tsx" class="nav-file">useDashboardStats.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/dashboard/pages</div><a href="#features_dashboard_pages_AuditLogPage_test_tsx" class="nav-file">AuditLogPage.test.tsx</a><a href="#features_dashboard_pages_DashboardPage_test_tsx" class="nav-file">DashboardPage.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/roles/components</div><a href="#features_identity_roles_components_DeleteRoleDialog_test_tsx" class="nav-file">DeleteRoleDialog.test.tsx</a><a href="#features_identity_roles_components_RoleForm_test_tsx" class="nav-file">RoleForm.test.tsx</a><a href="#features_identity_roles_components_RoleList_test_tsx" class="nav-file">RoleList.test.tsx</a><a href="#features_identity_roles_components_RoleReassignmentSelector_test_tsx" class="nav-file">RoleReassignmentSelector.test.tsx</a><a href="#features_identity_roles_components_RoleTable_test_tsx" class="nav-file">RoleTable.test.tsx</a><a href="#features_identity_roles_components_SubjectSelectorDialog_test_tsx" class="nav-file">SubjectSelectorDialog.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/roles/components/components</div><a href="#features_identity_roles_components_components_RolePermissionsCell_test_tsx" class="nav-file">RolePermissionsCell.test.tsx</a><a href="#features_identity_roles_components_components_RoleUsageAvatar_test_tsx" class="nav-file">RoleUsageAvatar.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/roles/constants</div><a href="#features_identity_roles_constants_roleConstants_test_ts" class="nav-file">roleConstants.test.ts</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/roles/hooks</div><a href="#features_identity_roles_hooks_useRoleForm_test_tsx" class="nav-file">useRoleForm.test.tsx</a><a href="#features_identity_roles_hooks_useRoles_test_tsx" class="nav-file">useRoles.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/users/components</div><a href="#features_identity_users_components_DeleteUserDialog_test_tsx" class="nav-file">DeleteUserDialog.test.tsx</a><a href="#features_identity_users_components_ExportUsersDialog_test_tsx" class="nav-file">ExportUsersDialog.test.tsx</a><a href="#features_identity_users_components_ImportUsersDialog_test_tsx" class="nav-file">ImportUsersDialog.test.tsx</a><a href="#features_identity_users_components_UserForm_test_tsx" class="nav-file">UserForm.test.tsx</a><a href="#features_identity_users_components_UserList_test_tsx" class="nav-file">UserList.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/users/components/list</div><a href="#features_identity_users_components_list_UserFilters_test_tsx" class="nav-file">UserFilters.test.tsx</a><a href="#features_identity_users_components_list_UserTable_test_tsx" class="nav-file">UserTable.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/users/components/list/components</div><a href="#features_identity_users_components_list_components_UserActions_test_tsx" class="nav-file">UserActions.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/identity/users/hooks</div><a href="#features_identity_users_hooks_useUserForm_test_tsx" class="nav-file">useUserForm.test.tsx</a><a href="#features_identity_users_hooks_useUsers_test_tsx" class="nav-file">useUsers.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/notifications/components</div><a href="#features_notifications_components_NotificationPreferences_test_tsx" class="nav-file">NotificationPreferences.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/notifications/hooks</div><a href="#features_notifications_hooks_useNotificationActions_test_ts" class="nav-file">useNotificationActions.test.ts</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/notifications/pages</div><a href="#features_notifications_pages_NotificationCenter_test_tsx" class="nav-file">NotificationCenter.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/reservations/components</div><a href="#features_reservations_components_BlockForm_test_tsx" class="nav-file">BlockForm.test.tsx</a><a href="#features_reservations_components_CalendarDetailsDialog_test_tsx" class="nav-file">CalendarDetailsDialog.test.tsx</a><a href="#features_reservations_components_ConfirmCalendarActionDialog_test_tsx" class="nav-file">ConfirmCalendarActionDialog.test.tsx</a><a href="#features_reservations_components_DeleteReservationDialog_test_tsx" class="nav-file">DeleteReservationDialog.test.tsx</a><a href="#features_reservations_components_ExportReservationsDialog_test_tsx" class="nav-file">ExportReservationsDialog.test.tsx</a><a href="#features_reservations_components_ImportReservationsDialog_test_tsx" class="nav-file">ImportReservationsDialog.test.tsx</a><a href="#features_reservations_components_RejectReservationDialog_test_tsx" class="nav-file">RejectReservationDialog.test.tsx</a><a href="#features_reservations_components_ReservationList_test_tsx" class="nav-file">ReservationList.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/reservations/components/list</div><a href="#features_reservations_components_list_ReservationFilters_test_tsx" class="nav-file">ReservationFilters.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/reservations/components/list/components</div><a href="#features_reservations_components_list_components_ReservationActions_test_tsx" class="nav-file">ReservationActions.test.tsx</a><a href="#features_reservations_components_list_components_SmallComponents_test_tsx" class="nav-file">SmallComponents.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/reservations/components/list/filters</div><a href="#features_reservations_components_list_filters_ReservationSubFilters_test_tsx" class="nav-file">ReservationSubFilters.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/reservations/components/reservation-form</div><a href="#features_reservations_components_reservation-form_ReservationForm_test_tsx" class="nav-file">ReservationForm.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/reservations/hooks</div><a href="#features_reservations_hooks_useConflictChecker_test_ts" class="nav-file">useConflictChecker.test.ts</a><a href="#features_reservations_hooks_useReservationForm_test_tsx" class="nav-file">useReservationForm.test.tsx</a><a href="#features_reservations_hooks_useReservations_test_tsx" class="nav-file">useReservations.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/reservations/utils</div><a href="#features_reservations_utils_reservationValidation_test_ts" class="nav-file">reservationValidation.test.ts</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/spaces/components</div><a href="#features_spaces_components_DeleteSpaceDialog_test_tsx" class="nav-file">DeleteSpaceDialog.test.tsx</a><a href="#features_spaces_components_ImportSpacesDialog_test_tsx" class="nav-file">ImportSpacesDialog.test.tsx</a><a href="#features_spaces_components_SpaceForm_test_tsx" class="nav-file">SpaceForm.test.tsx</a><a href="#features_spaces_components_SpaceList_test_tsx" class="nav-file">SpaceList.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/spaces/components/availability</div><a href="#features_spaces_components_availability_AvailabilitySelectors_test_tsx" class="nav-file">AvailabilitySelectors.test.tsx</a><a href="#features_spaces_components_availability_ProposalCard_test_tsx" class="nav-file">ProposalCard.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/spaces/components/list</div><a href="#features_spaces_components_list_SpaceFilters_test_tsx" class="nav-file">SpaceFilters.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/spaces/components/list/components</div><a href="#features_spaces_components_list_components_SpaceActions_test_tsx" class="nav-file">SpaceActions.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/spaces/hooks</div><a href="#features_spaces_hooks_useAvailabilitySearch_test_tsx" class="nav-file">useAvailabilitySearch.test.tsx</a><a href="#features_spaces_hooks_useSpaceForm_test_tsx" class="nav-file">useSpaceForm.test.tsx</a><a href="#features_spaces_hooks_useSpaces_test_tsx" class="nav-file">useSpaces.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">features/spaces/pages</div><a href="#features_spaces_pages_AvailabilitySearchPage_test_tsx" class="nav-file">AvailabilitySearchPage.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">layouts</div><a href="#layouts_Layout_test_tsx" class="nav-file">Layout.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">root</div><a href="#root_sanity_test_tsx" class="nav-file">sanity.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">shared/components</div><a href="#shared_components_BulkActionBar_test_tsx" class="nav-file">BulkActionBar.test.tsx</a><a href="#shared_components_BulkDeleteConflictDialog_test_tsx" class="nav-file">BulkDeleteConflictDialog.test.tsx</a><a href="#shared_components_ConfirmDialog_test_tsx" class="nav-file">ConfirmDialog.test.tsx</a><a href="#shared_components_DeleteEntityDialog_test_tsx" class="nav-file">DeleteEntityDialog.test.tsx</a><a href="#shared_components_EmptyState_test_tsx" class="nav-file">EmptyState.test.tsx</a><a href="#shared_components_ExportDataDialog_test_tsx" class="nav-file">ExportDataDialog.test.tsx</a><a href="#shared_components_FilterBar_test_tsx" class="nav-file">FilterBar.test.tsx</a><a href="#shared_components_FormDialogWrapper_test_tsx" class="nav-file">FormDialogWrapper.test.tsx</a><a href="#shared_components_PageHeader_test_tsx" class="nav-file">PageHeader.test.tsx</a><a href="#shared_components_PageLoader_test_tsx" class="nav-file">PageLoader.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">shared/components/Chips</div><a href="#shared_components_Chips_ReservationStatusChip_test_tsx" class="nav-file">ReservationStatusChip.test.tsx</a><a href="#shared_components_Chips_ReservationTypeChip_test_tsx" class="nav-file">ReservationTypeChip.test.tsx</a><a href="#shared_components_Chips_StatusChip_test_tsx" class="nav-file">StatusChip.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">shared/components/DataTable</div><a href="#shared_components_DataTable_DataTable_test_tsx" class="nav-file">DataTable.test.tsx</a><a href="#shared_components_DataTable_ResourceTable_test_tsx" class="nav-file">ResourceTable.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">shared/hooks</div><a href="#shared_hooks_useBaseForm_test_ts" class="nav-file">useBaseForm.test.ts</a><a href="#shared_hooks_useBulkActions_test_tsx" class="nav-file">useBulkActions.test.tsx</a><a href="#shared_hooks_useDeleteEntity_test_tsx" class="nav-file">useDeleteEntity.test.tsx</a><a href="#shared_hooks_useFormValidation_test_ts" class="nav-file">useFormValidation.test.ts</a><a href="#shared_hooks_useModalStack_test_ts" class="nav-file">useModalStack.test.ts</a><a href="#shared_hooks_useResource_test_tsx" class="nav-file">useResource.test.tsx</a></div><div class="nav-pkg"><div class="nav-pkg-title">shared/utils</div><a href="#shared_utils_api_test_ts" class="nav-file">api.test.ts</a><a href="#shared_utils_dateUtils_test_ts" class="nav-file">dateUtils.test.ts</a><a href="#shared_utils_formUtils_test_ts" class="nav-file">formUtils.test.ts</a><a href="#shared_utils_timeUtils_test_ts" class="nav-file">timeUtils.test.ts</a></div>
+        </div>
+    </aside>
+    <main>
+        <h1>Resultados de Pruebas Unitarias</h1>
+        <p style="color: var(--text-light); margin-bottom: 30px;">Documentación detallada generada automáticamente a partir de las suites de prueba de Vitest.</p>
+        
+        <div class="summary-cards">
+            <div class="card total"><div class="label">Total Tests</div><div class="value">421</div></div>
+            <div class="card passed"><div class="label">Superados</div><div class="value">421</div></div>
+            <div class="card failed"><div class="label">Fallidos</div><div class="value">0</div></div>
+        </div>
+<h2 class="package-header">Paquete: <code>context</code></h2>
+        <div class="file-section" id="context_AuthContext_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 AuthContext.test.tsx</div>
+                <div class="file-status passed">passed (190.258056640625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: AuthContext</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe iniciar como no autenticado si no hay token</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar el perfil de usuario al hacer login</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe limpiar datos al hacer logout</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe verificar permisos correctamente</span></div></div></div>
+        <div class="file-section" id="context_NotificationContext_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 NotificationContext.test.tsx</div>
+                <div class="file-status passed">passed (240.171875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: NotificationContext</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar el contador y la lista inicial</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API para marcar como leída</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API para borrar todo</span></div></div></div>
+        <div class="file-section" id="context_SettingsContext_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SettingsContext.test.tsx</div>
+                <div class="file-status passed">passed (212.287353515625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SettingsContext</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar configuración de la API</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe usar valores por defecto si falla la API</span></div></div></div>
+        <div class="file-section" id="context_SnackbarContext_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SnackbarContext.test.tsx</div>
+                <div class="file-status passed">passed (671.282958984375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SnackbarContext</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar el snackbar al llamar a showSnackbar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cerrarse al pulsar la X</span></div></div></div><h2 class="package-header">Paquete: <code>features/analytics/reports/components</code></h2>
+        <div class="file-section" id="features_analytics_reports_components_ReportActionFooter_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReportActionFooter.test.tsx</div>
+                <div class="file-status passed">passed (803.05126953125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReportActionFooter</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los botones y el aviso legal</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onAction al pulsar los botones</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar botones si disabled es true</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar estado de carga</span></div></div></div>
+        <div class="file-section" id="features_analytics_reports_components_ReportConfigSwitcher_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReportConfigSwitcher.test.tsx</div>
+                <div class="file-status passed">passed (1915.752197265625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReportConfigSwitcher</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el config de firmas y permitir seleccionar espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cambiar al config de uso de asignaturas y permitir seleccionar asignaturas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el config de ocupación</span></div></div></div>
+        <div class="file-section" id="features_analytics_reports_components_ReportPreview_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReportPreview.test.tsx</div>
+                <div class="file-status passed">passed (630.841064453125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReportPreview</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el iframe con la URL proporcionada</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onClose al pulsar cerrar o cambiar selección</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onDownload al pulsar descargar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir la URL en una nueva pestaña al pulsar pantalla completa</span></div></div></div>
+        <div class="file-section" id="features_analytics_reports_components_ReportTypeSelector_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReportTypeSelector.test.tsx</div>
+                <div class="file-status passed">passed (339.09814453125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReportTypeSelector</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar todos los tipos de informe</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onTypeChange al pulsar un tipo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe resaltar el tipo activo</span></div></div></div>
+        <div class="file-section" id="features_analytics_reports_components_ReportValidationDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReportValidationDialog.test.tsx</div>
+                <div class="file-status passed">passed (1084.458251953125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReportValidationDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar aviso de espacios sin actividad</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar error si todos los seleccionados están vacíos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onToggleInclusion al pulsar un item de la lista</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onIncludeAll al pulsar el botón correspondiente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onConfirm al pulsar Generar Informe</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe adaptar el género para asignaturas</span></div></div></div><h2 class="package-header">Paquete: <code>features/analytics/reports/components/configs</code></h2>
+        <div class="file-section" id="features_analytics_reports_components_configs_OccupancyConfig_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 OccupancyConfig.test.tsx</div>
+                <div class="file-status passed">passed (1531.549560546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: OccupancyConfig</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar pickers de fecha y selector de espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar todos los espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar estado indeterminado si algunos espacios están seleccionados</span></div></div></div>
+        <div class="file-section" id="features_analytics_reports_components_configs_SignaturesConfig_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SignaturesConfig.test.tsx</div>
+                <div class="file-status passed">passed (1833.596923828125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SignaturesConfig</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el picker de semana y el selector de espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar un grupo completo de espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar todos los espacios globalmente</span></div></div></div>
+        <div class="file-section" id="features_analytics_reports_components_configs_SubjectUsageConfig_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SubjectUsageConfig.test.tsx</div>
+                <div class="file-status passed">passed (1215.400390625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SubjectUsageConfig</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar todos los controles</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar todas las asignaturas</span></div></div></div><h2 class="package-header">Paquete: <code>features/analytics/reports/hooks</code></h2>
+        <div class="file-section" id="features_analytics_reports_hooks_useReports_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useReports.test.tsx</div>
+                <div class="file-status passed">passed (322.669921875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useReports</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar con valores por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar si la configuración está incompleta</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe ejecutar el flujo de validación y generación PDF</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar elementos sin disponibilidad y pedir confirmación</span></div></div></div><h2 class="package-header">Paquete: <code>features/analytics/reports/pages</code></h2>
+        <div class="file-section" id="features_analytics_reports_pages_ReportsPage_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReportsPage.test.tsx</div>
+                <div class="file-status passed">passed (3073.91015625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReportsPage</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y las opciones de reportes</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar el tipo de informe pulsando en las tarjetas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe tener el botón de generar inicialmente deshabilitado</span></div></div></div><h2 class="package-header">Paquete: <code>features/auth/components</code></h2>
+        <div class="file-section" id="features_auth_components_RequireAuth_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RequireAuth.test.tsx</div>
+                <div class="file-status passed">passed (339.16845703125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RequireAuth</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar PageLoader si está cargando</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe redirigir a login si no está autenticado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el contenido si está autenticado y tiene permisos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe redirigir a unauthorized si no tiene el permiso requerido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe redirigir a unauthorized si no tiene el rol permitido</span></div></div></div><h2 class="package-header">Paquete: <code>features/auth/hooks</code></h2>
+        <div class="file-section" id="features_auth_hooks_useLogin_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 useLogin.test.ts</div>
+                <div class="file-status passed">passed (52.141357421875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useLogin</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar estados correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe actualizar email y password</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe realizar login exitoso y navegar al home</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar errores de autenticación</span></div></div></div><h2 class="package-header">Paquete: <code>features/auth/pages</code></h2>
+        <div class="file-section" id="features_auth_pages_LoginPage_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 LoginPage.test.tsx</div>
+                <div class="file-status passed">passed (2772.275634765625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: LoginPage</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los campos de login</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir escribir en los campos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar error cuando las credenciales son incorrectas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cambiar la visibilidad de la contraseña al pulsar el icono</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar al API y redirigir (implícito) al login exitoso</span></div></div></div><h2 class="package-header">Paquete: <code>features/calendar/components</code></h2>
+        <div class="file-section" id="features_calendar_components_AgendaEvent_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 AgendaEvent.test.tsx</div>
+                <div class="file-status passed">passed (156.5146484375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: AgendaEvent</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y el tipo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar BLOQUEO si el estado es bloqueo</span></div></div></div>
+        <div class="file-section" id="features_calendar_components_CalendarDialogs_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 CalendarDialogs.test.tsx</div>
+                <div class="file-status passed">passed (119.646240234375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: CalendarDialogs</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el diálogo de detalles si está abierto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir el diálogo de edición desde detalles</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar el éxito de una creación correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar confirmAction dialog si está abierto</span></div></div></div>
+        <div class="file-section" id="features_calendar_components_CalendarHeader_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 CalendarHeader.test.tsx</div>
+                <div class="file-status passed">passed (1325.612060546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: CalendarHeader</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el label y el botón Hoy</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe navegar al pulsar Anterior/Siguiente/Hoy</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar de vista usando el menú</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir el selector de fecha al pulsar el label</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onToggleSidebar al pulsar el icono de menú</span></div></div></div>
+        <div class="file-section" id="features_calendar_components_CalendarSidebar_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 CalendarSidebar.test.tsx</div>
+                <div class="file-status passed">passed (1754.481201171875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: CalendarSidebar</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los grupos de espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar los espacios individuales al estar expandido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onToggleSpace al pulsar un espacio</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar todos los espacios globalmente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir filtrar por estado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir filtrar por tipo de reserva</span></div></div></div>
+        <div class="file-section" id="features_calendar_components_EventTooltip_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 EventTooltip.test.tsx</div>
+                <div class="file-status passed">passed (1337.323486328125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: EventTooltip</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar el contenido detallado al pasar el ratón</span></div></div></div><h2 class="package-header">Paquete: <code>features/calendar/hooks</code></h2>
+        <div class="file-section" id="features_calendar_hooks_useCalendarEvents_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useCalendarEvents.test.tsx</div>
+                <div class="file-status passed">passed (578.5126953125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useCalendarEvents</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar espacios y eventos al inicializar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe filtrar eventos por estado localmente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir aprobar una reserva</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar espacios desde la URL si están presentes</span></div></div></div>
+        <div class="file-section" id="features_calendar_hooks_useCalendarNavigation_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 useCalendarNavigation.test.ts</div>
+                <div class="file-status passed">passed (29.11474609375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useCalendarNavigation</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir modal de detalles cuando reservationId está en la URL</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir modal de creación cuando openForm=true está en la URL</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir detalles solo con ID si el evento no está cargado</span></div></div></div><h2 class="package-header">Paquete: <code>features/calendar/pages</code></h2>
+        <div class="file-section" id="features_calendar_pages_CalendarView_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 CalendarView.test.tsx</div>
+                <div class="file-status passed">passed (3280.705810546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: CalendarView</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el calendario y la barra lateral</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar los eventos cargados de la API</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar de vista</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe filtrar eventos por espacio en la barra lateral</span></div></div></div><h2 class="package-header">Paquete: <code>features/dashboard/components</code></h2>
+        <div class="file-section" id="features_dashboard_components_DashboardHeader_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DashboardHeader.test.tsx</div>
+                <div class="file-status passed">passed (629.338623046875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DashboardHeader</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los pickers de fecha con los valores iniciales</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe contener los inputs con las fechas formateadas</span></div></div></div>
+        <div class="file-section" id="features_dashboard_components_ExportAuditDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ExportAuditDialog.test.tsx</div>
+                <div class="file-status passed">passed (1156.14501953125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ExportAuditDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizarse correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onExport con las columnas seleccionadas al pulsar descargar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onClose al pulsar cancelar</span></div></div></div><h2 class="package-header">Paquete: <code>features/dashboard/hooks</code></h2>
+        <div class="file-section" id="features_dashboard_hooks_useDashboardStats_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useDashboardStats.test.tsx</div>
+                <div class="file-status passed">passed (263.6826171875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useDashboardStats</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar estadísticas con el rango por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar el rango de fechas</span></div></div></div><h2 class="package-header">Paquete: <code>features/dashboard/pages</code></h2>
+        <div class="file-section" id="features_dashboard_pages_AuditLogPage_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 AuditLogPage.test.tsx</div>
+                <div class="file-status passed">passed (2062.31640625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: AuditLogPage</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y el subtítulo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe listar los registros obtenidos de la API usando sus etiquetas configuradas</span></div></div></div>
+        <div class="file-section" id="features_dashboard_pages_DashboardPage_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DashboardPage.test.tsx</div>
+                <div class="file-status passed">passed (1839.5595703125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DashboardPage</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el dashboard global para administradores</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el dashboard personal para usuarios normales</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/roles/components</code></h2>
+        <div class="file-section" id="features_identity_roles_components_DeleteRoleDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DeleteRoleDialog.test.tsx</div>
+                <div class="file-status passed">passed (2759.58447265625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DeleteRoleDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar conflictos (usuarios vinculados) y pedir reasignación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar un rol de destino y confirmar eliminación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar mensaje simple si no hay conflictos</span></div></div></div>
+        <div class="file-section" id="features_identity_roles_components_RoleForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RoleForm.test.tsx</div>
+                <div class="file-status passed">passed (3448.902587890625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RoleForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y cargar permisos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a togglePermission al pulsar un checkbox de permiso</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a toggleCategory al pulsar MARCAR TODO</span></div></div></div>
+        <div class="file-section" id="features_identity_roles_components_RoleList_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RoleList.test.tsx</div>
+                <div class="file-status passed">passed (6358.616943359375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RoleList</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y la tabla de roles</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir el formulario de nuevo rol al pulsar el botón</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe filtrar roles por búsqueda</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir ver detalles de un rol</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir abrir el diálogo de borrado</span></div></div></div>
+        <div class="file-section" id="features_identity_roles_components_RoleReassignmentSelector_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RoleReassignmentSelector.test.tsx</div>
+                <div class="file-status passed">passed (1211.70263671875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RoleReassignmentSelector</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el mensaje de reasignación cuando hay conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe filtrar los roles seleccionados para el destino</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onReassignChange al seleccionar un rol</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">no debe renderizar nada si no hay conflictos</span></div></div></div>
+        <div class="file-section" id="features_identity_roles_components_RoleTable_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RoleTable.test.tsx</div>
+                <div class="file-status passed">passed (1468.50244140625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RoleTable</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los roles y sus columnas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe disparar acciones al pulsar botones</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar la ordenación al pulsar en cabecera</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar una fila</span></div></div></div>
+        <div class="file-section" id="features_identity_roles_components_SubjectSelectorDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SubjectSelectorDialog.test.tsx</div>
+                <div class="file-status passed">passed (1116.94873046875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SubjectSelectorDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la lista de asignaturas agrupadas por curso</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onToggle al pulsar una asignatura</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onClearAll al pulsar deseleccionar todas</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/roles/components/components</code></h2>
+        <div class="file-section" id="features_identity_roles_components_components_RolePermissionsCell_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RolePermissionsCell.test.tsx</div>
+                <div class="file-status passed">passed (315.322509765625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RolePermissionsCell</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar los dos primeros permisos y el contador de extras</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar los chips si el rol está eliminado</span></div></div></div>
+        <div class="file-section" id="features_identity_roles_components_components_RoleUsageAvatar_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RoleUsageAvatar.test.tsx</div>
+                <div class="file-status passed">passed (239.589599609375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RoleUsageAvatar</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la cantidad de usuarios activos cuando no hay eliminados</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el formato active / total cuando hay eliminados</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar el tooltip correcto para un usuario</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/roles/constants</code></h2>
+        <div class="file-section" id="features_identity_roles_constants_roleConstants_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 roleConstants.test.ts</div>
+                <div class="file-status passed">passed (6.0302734375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: roleConstants > getCategoryByPermission</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe devolver la categoría correcta para un permiso conocido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe devolver la categoría Otros para un permiso desconocido</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: roleConstants > formatPermissionName</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe formatear nombres con guiones bajos a mayúsculas iniciales</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: roleConstants > PERMISSION_CATEGORIES</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe contener las categorías principales</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/roles/hooks</code></h2>
+        <div class="file-section" id="features_identity_roles_hooks_useRoleForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useRoleForm.test.tsx</div>
+                <div class="file-status passed">passed (94.060546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useRoleForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar con valores por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir añadir y quitar permisos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe marcar toda una categoría</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API al guardar</span></div></div></div>
+        <div class="file-section" id="features_identity_roles_hooks_useRoles_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useRoles.test.tsx</div>
+                <div class="file-status passed">passed (768.81884765625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useRoles hook</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar los roles satisfactoriamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe filtrar roles localmente por búsqueda con debounce</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cambiar la ordenación y disparar nueva carga</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir restaurar un rol eliminado</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/users/components</code></h2>
+        <div class="file-section" id="features_identity_users_components_DeleteUserDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DeleteUserDialog.test.tsx</div>
+                <div class="file-status passed">passed (2400.38232421875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DeleteUserDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar mensaje simple si no hay conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar lista de reservas si hay conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a handleDelete al confirmar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe proteger al administrador principal</span></div></div></div>
+        <div class="file-section" id="features_identity_users_components_ExportUsersDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ExportUsersDialog.test.tsx</div>
+                <div class="file-status passed">passed (1194.150146484375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ExportUsersDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y las columnas de usuario</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onExport con las columnas seleccionadas</span></div></div></div>
+        <div class="file-section" id="features_identity_users_components_ImportUsersDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ImportUsersDialog.test.tsx</div>
+                <div class="file-status passed">passed (3014.35205078125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ImportUsersDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título e instrucciones</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar conflictos detectados tras validación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe completar la importación exitosamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar el botón de actualizar si no hay conflictos</span></div></div></div>
+        <div class="file-section" id="features_identity_users_components_UserForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 UserForm.test.tsx</div>
+                <div class="file-status passed">passed (4716.55517578125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: UserForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar modo creación con campos vacíos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar modo edición con datos iniciales</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar que las contraseñas coincidan</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a saveUser al enviar un formulario válido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe ocultar Rol y Estado cuando el usuario se edita a sí mismo</span></div></div></div>
+        <div class="file-section" id="features_identity_users_components_UserList_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 UserList.test.tsx</div>
+                <div class="file-status passed">passed (8346.842041015625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: UserList</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y el botón de nuevo usuario</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe listar los usuarios obtenidos de la API</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir filtrar usuarios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir el formulario de edición al pulsar editar en un usuario no protegido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir el diálogo de borrado al pulsar eliminar en un usuario no protegido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir el diálogo de bloqueo al pulsar bloquear en un usuario no protegido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar banner de acciones masivas al seleccionar varios</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/users/components/list</code></h2>
+        <div class="file-section" id="features_identity_users_components_list_UserFilters_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 UserFilters.test.tsx</div>
+                <div class="file-status passed">passed (1544.332275390625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: UserFilters</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar búsqueda y selector de rol</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a setSearchRole al cambiar el rol</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a clearFilters al pulsar el botón de Limpiar</span></div></div></div>
+        <div class="file-section" id="features_identity_users_components_list_UserTable_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 UserTable.test.tsx</div>
+                <div class="file-status passed">passed (3306.123291015625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: UserTable</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los usuarios y sus roles</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a handleSort al pulsar cabecera</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe proteger la cuenta admin de selección</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe disparar acciones al pulsar botones de acción</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/users/components/list/components</code></h2>
+        <div class="file-section" id="features_identity_users_components_list_components_UserActions_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 UserActions.test.tsx</div>
+                <div class="file-status passed">passed (1006.886474609375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: UserActions</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar botones de editar, bloquear y eliminar para usuario activo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a handleAction con la acción correcta</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar botón de restaurar para usuario eliminado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar botones si el usuario es protegido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe proteger la cuenta admin principal</span></div></div></div><h2 class="package-header">Paquete: <code>features/identity/users/hooks</code></h2>
+        <div class="file-section" id="features_identity_users_hooks_useUserForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useUserForm.test.tsx</div>
+                <div class="file-status passed">passed (58.384765625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useUserForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar el formulario</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API al guardar un usuario nuevo</span></div></div></div>
+        <div class="file-section" id="features_identity_users_hooks_useUsers_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useUsers.test.tsx</div>
+                <div class="file-status passed">passed (367.34716796875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useUsers hook</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar los usuarios satisfactoriamente con paginación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar el término de búsqueda</span></div></div></div><h2 class="package-header">Paquete: <code>features/notifications/components</code></h2>
+        <div class="file-section" id="features_notifications_components_NotificationPreferences_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 NotificationPreferences.test.tsx</div>
+                <div class="file-status passed">passed (3517.724365234375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: NotificationPreferences</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar y renderizar las preferencias actuales</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe filtrar filas según permisos (Usuario básico)</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe habilitar el botón guardar cuando hay cambios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API al guardar cambios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar diálogo de confirmación al restaurar</span></div></div></div><h2 class="package-header">Paquete: <code>features/notifications/hooks</code></h2>
+        <div class="file-section" id="features_notifications_hooks_useNotificationActions_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 useNotificationActions.test.ts</div>
+                <div class="file-status passed">passed (48.590087890625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useNotificationActions</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe marcar como leída y navegar por actionPath</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar detalles si la reserva está RECHAZADA</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe navegar a notificaciones con query param si no hay onShowDetails y está CANCELADA</span></div></div></div><h2 class="package-header">Paquete: <code>features/notifications/pages</code></h2>
+        <div class="file-section" id="features_notifications_pages_NotificationCenter_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 NotificationCenter.test.tsx</div>
+                <div class="file-status passed">passed (3225.615234375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: NotificationCenter</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y las notificaciones</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir marcar todas como leídas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir abrir la confirmación de vaciado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar a la pestaña de preferencias</span></div></div></div><h2 class="package-header">Paquete: <code>features/reservations/components</code></h2>
+        <div class="file-section" id="features_reservations_components_BlockForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 BlockForm.test.tsx</div>
+                <div class="file-status passed">passed (1822.89404296875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: BlockForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el espacio afectado y el título</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a submitBlock al pulsar confirmar si está sucio</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_CalendarDetailsDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 CalendarDetailsDialog.test.tsx</div>
+                <div class="file-status passed">passed (2442.358642578125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: CalendarDetailsDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar cargando si no se proporciona reserva y se busca por ID</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar los botones de acción si canEdit y canDelete son true</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar botones de aprobar/rechazar si canApproveReject es true y está SOLICITADA</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onEdit al pulsar el botón</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_ConfirmCalendarActionDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ConfirmCalendarActionDialog.test.tsx</div>
+                <div class="file-status passed">passed (1182.603271484375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ConfirmCalendarActionDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar modo MOVE con título y datos correctos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar modo RESIZE con título diferente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onConfirm al confirmar</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_DeleteReservationDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DeleteReservationDialog.test.tsx</div>
+                <div class="file-status passed">passed (1556.198974609375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DeleteReservationDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar los detalles de la reserva a cancelar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir confirmar la cancelación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar error de red si falla la cancelación</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_ExportReservationsDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ExportReservationsDialog.test.tsx</div>
+                <div class="file-status passed">passed (1269.43505859375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ExportReservationsDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título correcto y las columnas predefinidas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onExport con las columnas seleccionadas por defecto</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_ImportReservationsDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ImportReservationsDialog.test.tsx</div>
+                <div class="file-status passed">passed (2281.16943359375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ImportReservationsDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título e instrucciones de importación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar conflictos detectados tras la validación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir completar la importación si hay elementos válidos</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_RejectReservationDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 RejectReservationDialog.test.tsx</div>
+                <div class="file-status passed">passed (2842.3056640625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: RejectReservationDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el campo para el motivo de rechazo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe requerir un motivo antes de habilitar el botón</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar al endpoint y notificar éxito</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_ReservationList_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReservationList.test.tsx</div>
+                <div class="file-status passed">passed (5230.944580078125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReservationList</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y permitir filtrar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir el diálogo de detalles al pulsar ver</span></div></div></div><h2 class="package-header">Paquete: <code>features/reservations/components/list</code></h2>
+        <div class="file-section" id="features_reservations_components_list_ReservationFilters_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReservationFilters.test.tsx</div>
+                <div class="file-status passed">passed (2941.518310546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReservationFilters</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la barra de búsqueda y el botón de más filtros</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onFilterChange al escribir en la búsqueda</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a setAdvancedOpen al pulsar el botón</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar filtros avanzados si advancedOpen es true</span></div></div></div><h2 class="package-header">Paquete: <code>features/reservations/components/list/components</code></h2>
+        <div class="file-section" id="features_reservations_components_list_components_ReservationActions_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReservationActions.test.tsx</div>
+                <div class="file-status passed">passed (448.065185546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReservationActions</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar botones de aprobar/rechazar si puede aprobar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe disparar acción al pulsar aprobar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar botón de editar si puede editar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar botón de cancelar si puede borrar y no está terminada</span></div></div></div>
+        <div class="file-section" id="features_reservations_components_list_components_SmallComponents_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SmallComponents.test.tsx</div>
+                <div class="file-status passed">passed (486.93798828125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: Small Display Components > ReservationSpacesCell</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar los nombres de los espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar el contador de extras si hay más de 2</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: Small Display Components > UserRoleChip</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el nombre del rol</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar un rol desconocido con estilo por defecto</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: Small Display Components > SpaceStatusChip</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar estado físico DISPONIBLE</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar estado dinámico LIBRE</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mapear BLOQUEO a BLOQUEADO usando StatusChip</span></div></div></div><h2 class="package-header">Paquete: <code>features/reservations/components/list/filters</code></h2>
+        <div class="file-section" id="features_reservations_components_list_filters_ReservationSubFilters_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReservationSubFilters.test.tsx</div>
+                <div class="file-status passed">passed (2310.080078125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: Reservation Sub-Filters > DateRangeFilters</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los pickers de fecha</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: Reservation Sub-Filters > SpaceFilter</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el selector de espacios y llamar a onChange</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: Reservation Sub-Filters > SubjectFilter</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onChange al seleccionar asignatura</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: Reservation Sub-Filters > UserFilter</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onChange al seleccionar usuario</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: Reservation Sub-Filters > StatusTypeFilters</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onChange al cambiar estado o tipo</span></div></div></div><h2 class="package-header">Paquete: <code>features/reservations/components/reservation-form</code></h2>
+        <div class="file-section" id="features_reservations_components_reservation-form_ReservationForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReservationForm.test.tsx</div>
+                <div class="file-status passed">passed (4421.273681640625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReservationForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título del formulario de nueva reserva</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe contener las secciones del stepper o acordeones</span></div></div></div><h2 class="package-header">Paquete: <code>features/reservations/hooks</code></h2>
+        <div class="file-section" id="features_reservations_hooks_useConflictChecker_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 useConflictChecker.test.ts</div>
+                <div class="file-status passed">passed (605.7685546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useConflictChecker</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar con valores por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API tras el debounce al comprobar conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe limpiar conflictos si faltan parámetros</span></div></div></div>
+        <div class="file-section" id="features_reservations_hooks_useReservationForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useReservationForm.test.tsx</div>
+                <div class="file-status passed">passed (61.371337890625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useReservationForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar el formulario en modo creación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe hidratar el formulario desde initialSlot</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar campos y validar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API al guardar una reserva válida</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">no debe cargar la lista de usuarios si el usuario es básico (sin permisos de gestión)</span></div></div></div>
+        <div class="file-section" id="features_reservations_hooks_useReservations_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useReservations.test.tsx</div>
+                <div class="file-status passed">passed (352.34375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useReservations hook</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar catálogos y reservas al inicializar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir actualizar el estado de una reserva</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir limpiar filtros</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">no debe cargar la lista de usuarios si el usuario no tiene permisos de gestión</span></div></div></div><h2 class="package-header">Paquete: <code>features/reservations/utils</code></h2>
+        <div class="file-section" id="features_reservations_utils_reservationValidation_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 reservationValidation.test.ts</div>
+                <div class="file-status passed">passed (4.25390625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: reservationValidation > validateTemporalRange</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe invalidar si faltan fechas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe invalidar si fin <= inicio</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe invalidar fechas pasadas en creación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar correctamente rangos futuros</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: reservationValidation > validateResources</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe invalidar si no hay espacios</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar si hay al menos uno</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: reservationValidation > validateMetadata</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar bloqueos con descripción larga</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe invalidar bloqueos con descripción corta</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar reservas con título y tipo</span></div></div></div><h2 class="package-header">Paquete: <code>features/spaces/components</code></h2>
+        <div class="file-section" id="features_spaces_components_DeleteSpaceDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DeleteSpaceDialog.test.tsx</div>
+                <div class="file-status passed">passed (2375.894287109375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DeleteSpaceDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar conflictos y listar los detalles</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir eliminar forzadamente con conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar confirmación simple cuando no hay conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar error de red si falla la eliminación</span></div></div></div>
+        <div class="file-section" id="features_spaces_components_ImportSpacesDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ImportSpacesDialog.test.tsx</div>
+                <div class="file-status passed">passed (2379.29541015625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ImportSpacesDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y las instrucciones</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar un archivo y validarlo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe completar la importación tras la validación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar el botón de actualizar si no hay conflictos</span></div></div></div>
+        <div class="file-section" id="features_spaces_components_SpaceForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SpaceForm.test.tsx</div>
+                <div class="file-status passed">passed (5051.335205078125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SpaceForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los campos obligatorios en modo creación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar errores de validación al perder el foco en campos vacíos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir crear un espacio con datos válidos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar datos iniciales en modo edición</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar errores del servidor si la creación falla</span></div></div></div>
+        <div class="file-section" id="features_spaces_components_SpaceList_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SpaceList.test.tsx</div>
+                <div class="file-status passed">passed (5343.3388671875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SpaceList</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y permitir abrir diálogos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar filas y mostrar banner masivo</span></div></div></div><h2 class="package-header">Paquete: <code>features/spaces/components/availability</code></h2>
+        <div class="file-section" id="features_spaces_components_availability_AvailabilitySelectors_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 AvailabilitySelectors.test.tsx</div>
+                <div class="file-status passed">passed (396.122802734375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: Availability Selectors > DailySelector</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los días y resaltar el seleccionado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSelectDate al pulsar un día con resultados</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">no debe llamar a onSelectDate si el día no tiene resultados</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: Availability Selectors > TimeSlotSelector</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los slots de tiempo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSelectSlot al pulsar un slot</span></div></div></div>
+        <div class="file-section" id="features_spaces_components_availability_ProposalCard_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ProposalCard.test.tsx</div>
+                <div class="file-status passed">passed (633.779296875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ProposalCard</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los datos de la propuesta</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe calcular la eficiencia correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSelect al pulsar el botón</span></div></div></div><h2 class="package-header">Paquete: <code>features/spaces/components/list</code></h2>
+        <div class="file-section" id="features_spaces_components_list_SpaceFilters_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SpaceFilters.test.tsx</div>
+                <div class="file-status passed">passed (1522.48876953125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SpaceFilters</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar todos los controles de filtrado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a handleFilterChange al cambiar capacidad</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a handleFilterChange al cambiar ordenadores</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">no debe llamar a handleFilterChange si el valor es negativo</span></div></div></div><h2 class="package-header">Paquete: <code>features/spaces/components/list/components</code></h2>
+        <div class="file-section" id="features_spaces_components_list_components_SpaceActions_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 SpaceActions.test.tsx</div>
+                <div class="file-status passed">passed (358.704833984375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: SpaceActions</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar botones de editar, bloquear y eliminar si tiene permisos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe disparar acción al pulsar restaurar en un espacio eliminado</span></div></div></div><h2 class="package-header">Paquete: <code>features/spaces/hooks</code></h2>
+        <div class="file-section" id="features_spaces_hooks_useAvailabilitySearch_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useAvailabilitySearch.test.tsx</div>
+                <div class="file-status passed">passed (213.595703125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useAvailabilitySearch hook</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar con los valores por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar errores antes de buscar (modo estricto)</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe realizar búsqueda estática correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe realizar búsqueda flexible correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar filtros stales (obsoletos)</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe limpiar filtros y resultados</span></div></div></div>
+        <div class="file-section" id="features_spaces_hooks_useSpaceForm_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useSpaceForm.test.tsx</div>
+                <div class="file-status passed">passed (72.490966796875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useSpaceForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar el formulario con valores por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe hidratar el formulario con datos iniciales en modo edición</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe validar que la capacidad sea positiva</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API al guardar</span></div></div></div>
+        <div class="file-section" id="features_spaces_hooks_useSpaces_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useSpaces.test.tsx</div>
+                <div class="file-status passed">passed (254.897705078125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useSpaces hook</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar los espacios satisfactoriamente con paginación</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir buscar por nombre y limpiar filtros</span></div></div></div><h2 class="package-header">Paquete: <code>features/spaces/pages</code></h2>
+        <div class="file-section" id="features_spaces_pages_AvailabilitySearchPage_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 AvailabilitySearchPage.test.tsx</div>
+                <div class="file-status passed">passed (5176.826416015625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: AvailabilitySearchPage</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y los filtros iniciales</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe realizar una búsqueda en modo fijo y mostrar error si faltan campos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar a búsqueda flexible y mostrar sus campos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir introducir la capacidad mínima</span></div></div></div><h2 class="package-header">Paquete: <code>layouts</code></h2>
+        <div class="file-section" id="layouts_Layout_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 Layout.test.tsx</div>
+                <div class="file-status passed">passed (1290.533935546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: Layout - Navegación Inteligente</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar menús desplegables cuando hay múltiples opciones (ADMIN)</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe promover a botón directo cuando solo hay una opción (PROFESOR - Solo Espacios)</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe promover a botón directo en Reservas si solo hay una opción</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe ocultar secciones si no hay permisos</span></div></div></div><h2 class="package-header">Paquete: <code>root</code></h2>
+        <div class="file-section" id="root_sanity_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 sanity.test.tsx</div>
+                <div class="file-status passed">passed (95.941650390625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: Frontend Infrastructure Test</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">should render with all providers without crashing</span></div></div></div><h2 class="package-header">Paquete: <code>shared/components</code></h2>
+        <div class="file-section" id="shared_components_BulkActionBar_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 BulkActionBar.test.tsx</div>
+                <div class="file-status passed">passed (686.783447265625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: BulkActionBar</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la cantidad seleccionada en masculino</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la cantidad seleccionada en femenino</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar banner global si se cumplen las condiciones</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onDelete al pulsar eliminar</span></div></div></div>
+        <div class="file-section" id="shared_components_BulkDeleteConflictDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 BulkDeleteConflictDialog.test.tsx</div>
+                <div class="file-status passed">passed (1426.855224609375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: BulkDeleteConflictDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar mensaje de éxito si no hay conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar aviso de conflictos y lista desplegable</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onConfirm al pulsar borrar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar estado de carga inicial</span></div></div></div>
+        <div class="file-section" id="shared_components_ConfirmDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ConfirmDialog.test.tsx</div>
+                <div class="file-status passed">passed (1024.814697265625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ConfirmDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar título y descripción cuando está abierto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onConfirm al pulsar confirmar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onClose al pulsar cancelar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar estado de carga y deshabilitar botones</span></div></div></div>
+        <div class="file-section" id="shared_components_DeleteEntityDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DeleteEntityDialog.test.tsx</div>
+                <div class="file-status passed">passed (955.803955078125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DeleteEntityDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el nombre de la entidad y el título</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar estado de comprobación de conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar errores si se proporcionan</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onConfirm al pulsar el botón</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar nota de auditoría si se proporciona</span></div></div></div>
+        <div class="file-section" id="shared_components_EmptyState_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 EmptyState.test.tsx</div>
+                <div class="file-status passed">passed (220.58642578125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: EmptyState</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar título y descripción personalizados</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el icono si se proporciona</span></div></div></div>
+        <div class="file-section" id="shared_components_ExportDataDialog_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ExportDataDialog.test.tsx</div>
+                <div class="file-status passed">passed (1313.763671875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ExportDataDialog</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar las columnas y el título</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir seleccionar/desmarcar todo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onExport con las columnas seleccionadas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar el botón si no hay nada seleccionado</span></div></div></div>
+        <div class="file-section" id="shared_components_FilterBar_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 FilterBar.test.tsx</div>
+                <div class="file-status passed">passed (1142.85009765625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: FilterBar</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el campo de búsqueda con el valor inicial</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSearchChange cuando el usuario escribe</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir limpiar la búsqueda pulsando el icono</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar el switch de eliminados si se proporciona el callback</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar el botón de limpiar filtros si hay filtros activos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar children y extraContent</span></div></div></div>
+        <div class="file-section" id="shared_components_FormDialogWrapper_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 FormDialogWrapper.test.tsx</div>
+                <div class="file-status passed">passed (1094.560791015625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: FormDialogWrapper</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el título y el contenido</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSubmit al pulsar guardar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe abrir diálogo de confirmación si está sucio al cancelar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cerrar directamente si no está sucio al cancelar</span></div></div></div>
+        <div class="file-section" id="shared_components_PageHeader_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 PageHeader.test.tsx</div>
+                <div class="file-status passed">passed (319.10498046875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: PageHeader</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar título y subtítulo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar botones de acción y responder a clicks</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">no debe renderizar acciones marcadas como ocultas</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar botones si se especifica</span></div></div></div>
+        <div class="file-section" id="shared_components_PageLoader_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 PageLoader.test.tsx</div>
+                <div class="file-status passed">passed (465.47900390625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: PageLoader</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el mensaje por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar un mensaje personalizado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar un CircularProgress</span></div></div></div><h2 class="package-header">Paquete: <code>shared/components/Chips</code></h2>
+        <div class="file-section" id="shared_components_Chips_ReservationStatusChip_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReservationStatusChip.test.tsx</div>
+                <div class="file-status passed">passed (234.356689453125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReservationStatusChip</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la etiqueta correcta para APROBADA</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la etiqueta correcta para SOLICITADA</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el estado original si no se reconoce</span></div></div></div>
+        <div class="file-section" id="shared_components_Chips_ReservationTypeChip_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ReservationTypeChip.test.tsx</div>
+                <div class="file-status passed">passed (266.68310546875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ReservationTypeChip</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la etiqueta correcta para CLASE</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la etiqueta correcta para EXAMEN</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar el tipo original si no se reconoce</span></div></div></div>
+        <div class="file-section" id="shared_components_Chips_StatusChip_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 StatusChip.test.tsx</div>
+                <div class="file-status passed">passed (286.596923828125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: StatusChip</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar la etiqueta por defecto basada en el estado</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar una etiqueta personalizada si se proporciona</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar estados en minúsculas</span></div></div></div><h2 class="package-header">Paquete: <code>shared/components/DataTable</code></h2>
+        <div class="file-section" id="shared_components_DataTable_DataTable_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 DataTable.test.tsx</div>
+                <div class="file-status passed">passed (1399.315673828125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: DataTable</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar cabeceras y datos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar estado de carga</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar mensaje de error</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSort al pulsar cabecera sortable</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSelectOne al pulsar el checkbox de una fila</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onPageChange al pulsar flechas de paginación</span></div></div></div>
+        <div class="file-section" id="shared_components_DataTable_ResourceTable_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 ResourceTable.test.tsx</div>
+                <div class="file-status passed">passed (1073.7099609375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: ResourceTable</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe renderizar los datos obtenidos del recurso</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mostrar estado de carga</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a setSort al pulsar en la cabecera sortable</span></div></div></div><h2 class="package-header">Paquete: <code>shared/hooks</code></h2>
+        <div class="file-section" id="shared_hooks_useBaseForm_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 useBaseForm.test.ts</div>
+                <div class="file-status passed">passed (49.267578125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useBaseForm</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar con los valores proporcionados</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe actualizar campos y marcar como sucio</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar el evento handleChange estándar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir re-inicializar el formulario con resetForm</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a onSubmit con los datos actuales</span></div></div></div>
+        <div class="file-section" id="shared_hooks_useBulkActions_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useBulkActions.test.tsx</div>
+                <div class="file-status passed">passed (129.24365234375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useBulkActions</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe gestionar selección individual y múltiple</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a la API de conflictos al abrir el modal</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe ejecutar el borrado masivo y limpiar selección</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe soportar selección global</span></div></div></div>
+        <div class="file-section" id="shared_hooks_useDeleteEntity_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useDeleteEntity.test.tsx</div>
+                <div class="file-status passed">passed (236.5869140625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useDeleteEntity</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar conflictos al abrir</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe llamar a DELETE con force=true si hay conflictos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar errores al borrar</span></div></div></div>
+        <div class="file-section" id="shared_hooks_useFormValidation_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 useFormValidation.test.ts</div>
+                <div class="file-status passed">passed (44.138427734375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useFormValidation</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar sin errores</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe mapear errores desde una ApiException</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe obtener errores de campos individuales</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir limpiar errores individuales</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe limpiar todos los errores</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe devolver false si el error no tiene validationErrors</span></div></div></div>
+        <div class="file-section" id="shared_hooks_useModalStack_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 useModalStack.test.ts</div>
+                <div class="file-status passed">passed (63.107666015625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useModalStack</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe inicializar todos los modales como cerrados</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir abrir un modal con datos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cerrar un modal</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cerrar todos los modales a la vez</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe devolver props estándar con getProps</span></div></div></div>
+        <div class="file-section" id="shared_hooks_useResource_test_tsx">
+            <div class="file-header">
+                <div class="file-title">📄 useResource.test.tsx</div>
+                <div class="file-status passed">passed (305.787841796875ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useResource</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe cargar datos con paginación por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir cambiar de página</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe alternar dirección al ordenar por el mismo campo</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe resetear página al filtrar</span></div></div></div><h2 class="package-header">Paquete: <code>shared/utils</code></h2>
+        <div class="file-section" id="shared_utils_api_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 api.test.ts</div>
+                <div class="file-status passed">passed (64.7587890625ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: useApi</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe realizar una petición exitosa y devolver JSON</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar error 401 y hacer logout</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe manejar error 403 y notificar</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe lanzar ApiException con datos del servidor en errores 400</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe devolver Blob si el content-type es adecuado</span></div></div></div>
+        <div class="file-section" id="shared_utils_dateUtils_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 dateUtils.test.ts</div>
+                <div class="file-status passed">passed (12.47802734375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: dateUtils > parseApiDate</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe parsear una cadena ISO correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe parsear una cadena con espacio en lugar de T</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe devolver el mismo objeto si ya es una fecha</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: dateUtils > formatDisplayDate</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe formatear en español por defecto</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe aceptar una cadena de fecha como entrada</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: dateUtils > formatApiDate</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe formatear para la API (ISO sin offset)</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: dateUtils > isFuture</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar fechas futuras</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar fechas pasadas</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: dateUtils > isToday</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar el día actual</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe detectar días distintos</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: dateUtils > getSmartDefaultTime</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe usar la hora de apertura para días futuros</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe redondear a la siguiente media hora si es hoy</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe redondear a la siguiente hora entera si pasan de las :30</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe usar la hora de apertura si es hoy pero muy temprano</span></div></div></div>
+        <div class="file-section" id="shared_utils_formUtils_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 formUtils.test.ts</div>
+                <div class="file-status passed">passed (9.626953125ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: formUtils > areObjectsEqual</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe identificar primitivos iguales</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe identificar primitivos distintos</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe comparar objetos simples</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe ignorar el orden de las claves</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe comparar fechas correctamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe comparar arrays profundamente</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe comparar objetos anidados</span></div></div></div>
+        <div class="file-section" id="shared_utils_timeUtils_test_ts">
+            <div class="file-header">
+                <div class="file-title">📄 timeUtils.test.ts</div>
+                <div class="file-status passed">passed (4.267333984375ms)</div>
+            </div>
+        <div class="suite"><div class="suite-title">⚙️ Suite: timeUtils > isTimeDisabled</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe permitir horas dentro del rango</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe deshabilitar horas fuera del rango</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">solo debe permitir el minuto 0 en la hora de cierre</span></div></div><div class="suite"><div class="suite-title">⚙️ Suite: timeUtils > adjustTimeToStartHour</div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">debe ajustar la medianoche a la hora de inicio</span></div><div class="test-case test-passed"><span class="test-icon">✔</span><span class="test-name">no debe tocar la hora si ya está establecida</span></div></div></div>
+    </main>
+</body>
+</html>
