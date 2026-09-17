@@ -242,7 +242,7 @@ public class TfgBackendApplication {
 				);
 			}
 
-			// 4. Init Admin, Gestor and Profesor Users
+			// 4. Init Admin User
 			if (userRepository.findByEmail("admin@uniovi.es").isEmpty()) {
 				User admin = User.builder()
 						.name("Administrador")
@@ -251,26 +251,6 @@ public class TfgBackendApplication {
 						.role(adminRole)
 						.build();
 				userRepository.save(admin);
-			}
-			
-			if (userRepository.findByEmail("gestor@uniovi.es").isEmpty()) {
-				User gestor = User.builder()
-						.name("Gestor Principal")
-						.email("gestor@uniovi.es")
-						.password(passwordEncoder.encode("gestor123"))
-						.role(gestorRole)
-						.build();
-				userRepository.save(gestor);
-			}
-
-			if (userRepository.findByEmail("profesor@uniovi.es").isEmpty()) {
-				User profesor = User.builder()
-						.name("Profesor Estándar")
-						.email("profesor@uniovi.es")
-						.password(passwordEncoder.encode("profesor123"))
-						.role(profesorRole)
-						.build();
-				userRepository.save(profesor);
 			}
 			
 			// 5. Init Spaces
