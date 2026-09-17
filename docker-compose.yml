@@ -29,6 +29,12 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/tfg_db
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=pass
+      - SMTP_HOST=${SMTP_HOST:-mailhog}
+      - SMTP_PORT=${SMTP_PORT:-1025}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_AUTH=${SMTP_AUTH:-false}
+      - SMTP_STARTTLS=${SMTP_STARTTLS:-false}
     command: ./mvnw spring-boot:run
 
   frontend:
