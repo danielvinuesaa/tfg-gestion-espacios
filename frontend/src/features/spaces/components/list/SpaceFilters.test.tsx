@@ -22,7 +22,8 @@ describe('SpaceFilters', () => {
         setIncludeDeleted: mockSetIncludeDeleted,
         handleFilterChange: mockHandleFilterChange,
         clearFilters: mockClearFilters,
-        setPage: mockSetPage
+        setPage: mockSetPage,
+        canManage: true
     };
 
     beforeEach(() => {

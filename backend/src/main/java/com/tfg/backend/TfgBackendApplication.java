@@ -87,7 +87,7 @@ public class TfgBackendApplication {
 				Permission.builder().name("ELIMINAR_ESPACIOS").label("Eliminar Espacios").description("Permite realizar el borrado lógico de espacios.").build(),
 				
 				// Reservas
-				Permission.builder().name("VER_TODAS_RESERVAS").label("Ver todas las Reservas").description("Permite visualizar las reservas de todos los usuarios del centro.").build(),
+				Permission.builder().name("VER_TODAS_RESERVAS").label("Ver todas las Reservas").description("Permite acceder al calendario para poder visualizar todas las reservas de todos los usuarios del centro.").build(),
 				Permission.builder().name("SOLICITAR_RESERVA").label("Solicitar Reserva").description("Permite realizar solicitudes de reserva de espacios.").build(),
 				Permission.builder().name("APROBAR_RESERVA").label("Aprobar todas las Reservas").description("Capacidad de aprobar o rechazar cualquier reserva del sistema (Nivel Global).").build(),
 				Permission.builder().name("APROBAR_ASIGNATURAS_GESTIONADAS").label("Gestionar Reservas por Ámbito").description("Permite aprobar reservas solo de las asignaturas vinculadas a este rol.").build(),
@@ -125,10 +125,55 @@ public class TfgBackendApplication {
 					.build();
 				roleRepository.save(adminRole);
 			} else {
-				                                                                // Sincronizar permisos del admin con el catálogo completo
-				                                                                adminRole.setPermissions(allPermissions);
-				                                                                roleRepository.save(adminRole);
-				                                                        }			// 3. Init Subjects (Professional Sync Approach)
+				// Sincronizar permisos del admin con el catálogo completo
+				adminRole.setPermissions(allPermissions);
+				roleRepository.save(adminRole);
+			}
+
+			// Init GESTOR Role
+			Role gestorRole = roleRepository.findByName("GESTOR").orElse(null);
+			Set<Permission> gestorPermissions = allPermissions.stream()
+				.filter(p -> 
+					!p.getName().equals("GESTIONAR_USUARIOS") && 
+					!p.getName().equals("GESTIONAR_ROLES") &&
+					!p.getName().equals("CREAR_ESPACIOS") &&
+					!p.getName().equals("EDITAR_ESPACIOS") &&
+					!p.getName().equals("ELIMINAR_ESPACIOS") &&
+					!p.getName().equals("APROBAR_ASIGNATURAS_GESTIONADAS")
+				)
+				.collect(Collectors.toSet());
+			
+			if (gestorRole == null) {
+				gestorRole = Role.builder()
+					.name("GESTOR")
+					.description("Gestor Total (sin acceso a usuarios/roles)")
+					.permissions(gestorPermissions)
+					.build();
+				roleRepository.save(gestorRole);
+			} else {
+				gestorRole.setPermissions(gestorPermissions);
+				roleRepository.save(gestorRole);
+			}
+
+			// Init PROFESOR Role
+			Role profesorRole = roleRepository.findByName("PROFESOR").orElse(null);
+			Set<Permission> profesorPermissions = allPermissions.stream()
+				.filter(p -> p.getName().equals("LEER_ESPACIOS") || p.getName().equals("SOLICITAR_RESERVA") || p.getName().equals("VER_TODAS_RESERVAS"))
+				.collect(Collectors.toSet());
+			
+			if (profesorRole == null) {
+				profesorRole = Role.builder()
+					.name("PROFESOR")
+					.description("Profesor Estándar")
+					.permissions(profesorPermissions)
+					.build();
+				roleRepository.save(profesorRole);
+			} else {
+				profesorRole.setPermissions(profesorPermissions);
+				roleRepository.save(profesorRole);
+			}
+
+			// 3. Init Subjects (Professional Sync Approach)
 			List<Subject> subjectsToSync = Arrays.asList(
 				// 1º Curso
 				Subject.builder().code("AL").name("Álgebra lineal").course("1").build(),
@@ -197,7 +242,7 @@ public class TfgBackendApplication {
 				);
 			}
 
-			// 4. Init Admin User
+			// 4. Init Admin, Gestor and Profesor Users
 			if (userRepository.findByEmail("admin@uniovi.es").isEmpty()) {
 				User admin = User.builder()
 						.name("Administrador")
@@ -208,7 +253,33 @@ public class TfgBackendApplication {
 				userRepository.save(admin);
 			}
 			
-			// 5. Init Spaces (Comentado o eliminado a petición, se usarán los del ZIP)
+			if (userRepository.findByEmail("gestor@uniovi.es").isEmpty()) {
+				User gestor = User.builder()
+						.name("Gestor Principal")
+						.email("gestor@uniovi.es")
+						.password(passwordEncoder.encode("gestor123"))
+						.role(gestorRole)
+						.build();
+				userRepository.save(gestor);
+			}
+
+			if (userRepository.findByEmail("profesor@uniovi.es").isEmpty()) {
+				User profesor = User.builder()
+						.name("Profesor Estándar")
+						.email("profesor@uniovi.es")
+						.password(passwordEncoder.encode("profesor123"))
+						.role(profesorRole)
+						.build();
+				userRepository.save(profesor);
+			}
+			
+			// 5. Init Spaces
+			// Comentado para la demo: no crear espacios por defecto automáticamente.
+			// if (spaceRepository.count() == 0) {
+			// 	spaceRepository.save(Space.builder().name("Aula 1.01").type(SpaceType.AULA).totalCapacity(50).status(SpaceStatus.DISPONIBLE).build());
+			// 	spaceRepository.save(Space.builder().name("Laboratorio L-102").type(SpaceType.LABORATORIO).totalCapacity(20).computerCount(20).status(SpaceStatus.DISPONIBLE).build());
+			// 	spaceRepository.save(Space.builder().name("Sala de Estudio 1").type(SpaceType.SALA_ESTUDIO).totalCapacity(30).status(SpaceStatus.DISPONIBLE).build());
+			// }
 		};
 	}
 }

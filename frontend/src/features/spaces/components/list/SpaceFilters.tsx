@@ -25,6 +25,8 @@ interface SpaceFiltersProps {
     clearFilters: () => void;
     /** Función para establecer la página actual de resultados. */
     setPage: (page: number) => void;
+    /** Indica si el usuario actual tiene permisos de gestión (editar/eliminar) para ver eliminados. */
+    canManage: boolean;
 }
 
 /**
@@ -39,7 +41,8 @@ const SpaceFilters = ({
     searchName, setSearchName, 
     filters, 
     includeDeleted, setIncludeDeleted,
-    handleFilterChange, clearFilters, setPage 
+    handleFilterChange, clearFilters, setPage,
+    canManage
 }: SpaceFiltersProps) => {
     
     // Filtros activos (excluyendo includeDeleted que es preferencia de vista)
@@ -50,14 +53,14 @@ const SpaceFilters = ({
             searchQuery={searchName}
             onSearchChange={setSearchName}
             searchPlaceholder="Buscar por nombre..."
-            showDeleted={includeDeleted}
-            onShowDeletedChange={(val) => { setIncludeDeleted(val); setPage(0); }}
+            showDeleted={canManage ? includeDeleted : undefined}
+            onShowDeletedChange={canManage ? (val) => { setIncludeDeleted(val); setPage(0); } : undefined}
             hasActiveFilters={hasActiveFilters}
             onClearFilters={() => { clearFilters(); setPage(0); }}
         >
             {/* Filtros Personalizados: Tipo */}
             <FormControl size="small" sx={{ bgcolor: 'white', flex: '1 1 120px' }}>
-                <InputLabel id="space-type-filter-label">Tipo</InputLabel>
+                <InputLabel htmlFor="space-type-filter" id="space-type-filter-label">Tipo</InputLabel>
                 <Select
                     labelId="space-type-filter-label"
                     id="space-type-filter"
@@ -74,21 +77,31 @@ const SpaceFilters = ({
                 </Select>
             </FormControl>
 
-            {/* Filtros Personalizados: Estado */}
-            <FormControl size="small" sx={{ bgcolor: 'white', flex: '1 1 120px' }}>
-                <InputLabel id="space-status-filter-label">Estado</InputLabel>
-                <Select
-                    labelId="space-status-filter-label"
-                    id="space-status-filter"
-                    value={filters.status || ''}
-                    label="Estado"
-                    onChange={(e) => { handleFilterChange('status', e.target.value); setPage(0); }}
-                >
-                    <MenuItem value=""><em>Todos los operativos</em></MenuItem>
-                    <MenuItem value="DISPONIBLE">Solo Disponibles</MenuItem>
-                    <MenuItem value="BLOQUEADO">Solo Bloqueados</MenuItem>
-                </Select>
-            </FormControl>
+
+            {/* Filtros Personalizados: Estado (Solo si puede gestionar) */}
+            {canManage && (
+                <FormControl size="small" sx={{ bgcolor: 'white', flex: '1 1 120px' }}>
+                    <InputLabel htmlFor="space-status-filter" id="space-status-filter-label">Estado</InputLabel>
+                    <Select
+                        labelId="space-status-filter-label"
+                        id="space-status-filter"
+                        value={filters.status || ''}
+                        label="Estado"
+                        onChange={(e) => { 
+                            const val = e.target.value;
+                            handleFilterChange('status', val); 
+                            if (val === 'ELIMINADO') {
+                                setIncludeDeleted(true);
+                            }
+                            setPage(0); 
+                        }}
+                    >
+                        <MenuItem value=""><em>Todos</em></MenuItem>
+                        <MenuItem value="DISPONIBLE">Solo Disponibles</MenuItem>
+                        <MenuItem value="ELIMINADO">Solo Eliminados</MenuItem>
+                    </Select>
+                </FormControl>
+            )}
 
             {/* Filtros Personalizados: Capacidad Mínima */}
             <Tooltip title="Capacidad mínima" arrow placement="top">

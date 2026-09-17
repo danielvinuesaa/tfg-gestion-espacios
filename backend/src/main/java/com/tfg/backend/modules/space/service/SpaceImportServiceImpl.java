@@ -108,10 +108,12 @@ public class SpaceImportServiceImpl extends BaseCsvImportService<Space, ImportCo
                 .type(space.getType().name())
                 .capacity(space.getTotalCapacity())
                 .status(space.getStatus().name())
+                .computers(space.getComputerCount())
                 .gisId(space.getGisId())
                 .currentType(existing.get().getType().name())
                 .currentCapacity(existing.get().getTotalCapacity())
                 .currentStatus(existing.get().getStatus().name())
+                .currentComputers(existing.get().getComputerCount())
                 .currentGisId(existing.get().getGisId())
                 .hasReservations(hasRes)
                 .canOverwrite(!hasRes)
@@ -158,12 +160,21 @@ public class SpaceImportServiceImpl extends BaseCsvImportService<Space, ImportCo
             throw new BusinessValidationException("La capacidad debe ser un número entero.");
         }
 
+        int computers = 0;
+        if (row.length > 3 && !row[3].trim().isEmpty()) {
+            try {
+                computers = Integer.parseInt(row[3].trim());
+                if (computers < 0) computers = 0;
+            } catch (NumberFormatException ignored) {}
+        }
+
         return Space.builder()
                 .name(row[0].trim())
                 .type(type)
                 .totalCapacity(capacity)
-                .status(parseStatus(row.length > 3 ? row[3].trim() : null))
-                .gisId(row.length > 4 && !row[4].trim().isEmpty() ? row[4].trim() : null)
+                .computerCount(computers)
+                .status(parseStatus(row.length > 4 ? row[4].trim() : null))
+                .gisId(row.length > 5 && !row[5].trim().isEmpty() ? row[5].trim() : null)
                 .build();
     }
 
@@ -177,6 +188,7 @@ public class SpaceImportServiceImpl extends BaseCsvImportService<Space, ImportCo
     private void updateSpaceData(Space target, Space source) {
         target.setType(source.getType());
         target.setTotalCapacity(source.getTotalCapacity());
+        target.setComputerCount(source.getComputerCount());
         target.setStatus(source.getStatus());
         target.setGisId(source.getGisId());
     }

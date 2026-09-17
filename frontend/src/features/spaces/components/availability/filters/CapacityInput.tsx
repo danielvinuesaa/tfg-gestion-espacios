@@ -27,12 +27,12 @@ const CapacityInput = ({ value, onChange }: CapacityInputProps) => {
             value={value}
             onChange={(e) => {
                 const val = e.target.value;
-                if (val === '' || parseInt(val) >= 0) {
+                if (val === '' || parseInt(val) >= 1) {
                     onChange(val);
                 }
             }}
             fullWidth
-            inputProps={{ min: 0 }}
+            inputProps={{ min: 1 }}
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">

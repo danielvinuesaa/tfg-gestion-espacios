@@ -43,6 +43,7 @@ const SpaceList = () => {
     const canEdit = hasPermission('EDITAR_ESPACIOS');
     const canDelete = hasPermission('ELIMINAR_ESPACIOS');
     const canManage = canEdit || canDelete;
+    const canViewCalendar = hasPermission('VER_TODAS_RESERVAS');
 
     const {
         spaces, loading, isFetching, error, pagination, filters,
@@ -154,6 +155,7 @@ const SpaceList = () => {
                 handleFilterChange={(name, val) => setFilters({ [name]: val })} 
                 clearFilters={clearFilters} 
                 setPage={setPage} 
+                canManage={canManage}
             />
             
             <BulkActionBar 
@@ -191,6 +193,7 @@ const SpaceList = () => {
                     direction={pagination.direction} 
                     handleSort={setSort} 
                     canManage={canManage} 
+                    canViewCalendar={canViewCalendar}
                     canEdit={canEdit} 
                     canDelete={canDelete} 
                     handleAction={handleAction} 

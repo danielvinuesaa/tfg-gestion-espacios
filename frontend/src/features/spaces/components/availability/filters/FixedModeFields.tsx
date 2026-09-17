@@ -34,6 +34,7 @@ const FixedModeFields = ({ filters, setFilters, timeSettings }: FixedModeFieldsP
                 minutesStep={minuteStep}
                 shouldDisableTime={(val) => isTimeDisabled(val, startHour, endHour)}
                 maxDateTime={filters.endTime || undefined}
+                minDate={filters.endTime || undefined}
                 disablePast
                 ampm={false}
                 slotProps={{ 
@@ -50,6 +51,7 @@ const FixedModeFields = ({ filters, setFilters, timeSettings }: FixedModeFieldsP
                 minutesStep={minuteStep}
                 shouldDisableTime={(val) => isTimeDisabled(val, startHour, endHour)}
                 minDateTime={filters.startTime || undefined}
+                maxDate={filters.startTime || undefined}
                 disablePast
                 ampm={false}
                 slotProps={{ 

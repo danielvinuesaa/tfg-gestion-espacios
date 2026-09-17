@@ -33,6 +33,7 @@ interface ConfirmCalendarActionDialogProps {
     newStart: Date | null;
     newEnd: Date | null;
     actionType: 'MOVE' | 'RESIZE';
+    isSyncing?: boolean;
 }
 
 /**
@@ -51,6 +52,7 @@ interface ConfirmCalendarActionDialogProps {
  * @param props.newStart - Nueva fecha y hora de inicio propuestas.
  * @param props.newEnd - Nueva fecha y hora de fin propuestas.
  * @param props.actionType - Define el tipo de acción ejecutada, determinando el estilo y texto del diálogo ('MOVE' para traslados, 'RESIZE' para cambios de duración).
+ * @param props.isSyncing - Indica si la acción de confirmación está en progreso.
  * @returns Elemento React representando el diálogo de confirmación.
  */
 const ConfirmCalendarActionDialog = ({ 
@@ -60,7 +62,8 @@ const ConfirmCalendarActionDialog = ({
     event, 
     newStart, 
     newEnd,
-    actionType
+    actionType,
+    isSyncing = false
 }: ConfirmCalendarActionDialogProps) => {
     if (!event || !newStart || !newEnd) return null;
 
@@ -171,13 +174,20 @@ const ConfirmCalendarActionDialog = ({
             <Divider />
 
             <DialogActions sx={{ p: 2.5, bgcolor: '#f8f9fa', gap: 1 }}>
-                <Button onClick={onClose} variant="outlined" color="inherit" sx={{ textTransform: 'none', fontWeight: 'bold' }}>
+                <Button 
+                    onClick={onClose} 
+                    variant="outlined" 
+                    color="inherit" 
+                    disabled={isSyncing}
+                    sx={{ textTransform: 'none', fontWeight: 'bold' }}
+                >
                     Cancelar
                 </Button>
                 <Box sx={{ flexGrow: 1 }} />
                 <Button 
                     onClick={onConfirm} 
                     variant="contained" 
+                    disabled={isSyncing}
                     sx={{ 
                         bgcolor: config.mainColor,
                         '&:hover': { bgcolor: config.mainColor, filter: 'brightness(0.9)' },
@@ -187,7 +197,7 @@ const ConfirmCalendarActionDialog = ({
                         textTransform: 'none' 
                     }}
                 >
-                    Confirmar Cambio
+                    {isSyncing ? 'Guardando...' : 'Confirmar Cambio'}
                 </Button>
             </DialogActions>
         </Dialog>

@@ -38,4 +38,6 @@ Este repositorio contiene el código fuente completo del Trabajo Fin de Grado "S
    
 Una vez que ambos servicios estén funcionando correctamente, abre tu navegador web y accede a **`http://localhost:5173`** para ver e interactuar con la aplicación.
 
+## Evaluación y Revisión (Sólo en ZIP entregable)
 
+Si estás revisando este proyecto desde el paquete ZIP del entregable, puedes consultar la documentación del código fuente generada (JavaDoc y TypeDoc) abriendo los archivos `index.html` ubicados en la carpeta `../documentacion/codigo/` o los resultados de pruebas en `../documentacion/pruebas/` con cualquier navegador web.

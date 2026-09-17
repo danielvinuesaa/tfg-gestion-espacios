@@ -139,10 +139,10 @@ const CalendarView = () => {
 
     // --- Handlers de Acciones del Calendario ---
     
-    const handleConfirmAction = useCallback(() => {
+    const handleConfirmAction = useCallback(async () => {
         const pendingAction = modals.getData('confirmAction');
         if (pendingAction) {
-            handleUpdateEvent(pendingAction.event.id, pendingAction.start, pendingAction.end, pendingAction.event);
+            await handleUpdateEvent(pendingAction.event.id, pendingAction.start, pendingAction.end, pendingAction.event);
             modals.close('confirmAction');
         }
     }, [modals, handleUpdateEvent]);
@@ -190,6 +190,49 @@ const CalendarView = () => {
     }, [handleApprove]);
 
     // --- Selectores Memorizados ---
+
+    const confirmActionData = modals.getData('confirmAction');
+    const createActionData = modals.getData('create');
+
+    // Mapeo optimista para que la reserva no "vuelva atrás" mientras el modal de confirmación está abierto,
+    // y para mostrar un bloque de reserva provisional mientras se rellena el formulario de nueva reserva.
+    const displayEvents = useMemo(() => {
+        let events = filteredEvents;
+
+        if (confirmActionData) {
+            events = events.map(evt => {
+                if (evt.id === confirmActionData.event.id) {
+                    return {
+                        ...evt,
+                        start: confirmActionData.start,
+                        end: confirmActionData.end,
+                    };
+                }
+                return evt;
+            });
+        }
+
+        if (createActionData) {
+            events = [...events, {
+                id: -999, // ID temporal
+                title: '(Nueva Reserva)',
+                start: createActionData.start,
+                end: createActionData.end,
+                resource: {
+                    id: -999,
+                    title: '(Nueva Reserva)',
+                    status: 'SOLICITADA',
+                    spaces: [],
+                    type: 'OTRO',
+                    user: user || { id: -1, name: 'Tú', email: '', role: 'USER', isActive: true },
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+            } as any];
+        }
+
+        return events;
+    }, [filteredEvents, confirmActionData, createActionData, user]);
 
     const selectedEventId = modals.getData('details') || modals.getData('edit') || modals.getData('delete') || modals.getData('reject');
 
@@ -351,7 +394,7 @@ const CalendarView = () => {
                 }}>
                     <DnDCalendar
                         localizer={localizer}
-                        events={filteredEvents}
+                        events={displayEvents}
                         selectable
                         onSelectSlot={handleSelectSlot}
                         onEventDrop={handleMoveEvent}
@@ -420,6 +463,7 @@ const CalendarView = () => {
                 onShowSnackbar={showSnackbar}
                 onApprove={handleInternalApprove}
                 onConfirmAction={handleConfirmAction}
+                syncingEventId={syncingEventId}
             />
         </Box>
     );

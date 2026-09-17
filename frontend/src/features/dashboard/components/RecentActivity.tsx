@@ -94,7 +94,9 @@ const RecentActivity = ({ activities = [], isDashboard = false }: RecentActivity
                     onChange={handleTabChange} 
                     variant="scrollable"
                     scrollButtons="auto"
+                    allowScrollButtonsMobile
                     sx={{ 
+                        maxWidth: isDashboard ? { xs: '100%', sm: 400, lg: 350 } : '100%',
                         minHeight: 48,
                         '& .MuiTab-root': { 
                             minHeight: 48, 

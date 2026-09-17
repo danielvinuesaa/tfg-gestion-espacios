@@ -32,8 +32,8 @@ public class SpaceExportServiceImpl extends BaseCsvExportService<Space> implemen
         return switch (colId) {
             case "name" -> "Nombre del Espacio";
             case "type" -> "Tipo";
-            case "capacity" -> "Capacidad Total";
-            case "computers" -> "Ordenadores";
+            case "capacity", "totalCapacity" -> "Capacidad Total";
+            case "computers", "computerCount" -> "Ordenadores";
             case "status" -> "Estado";
             case "gisId" -> "ID GIS / Referencia";
             default -> colId;
@@ -46,8 +46,8 @@ public class SpaceExportServiceImpl extends BaseCsvExportService<Space> implemen
         return switch (colId) {
             case "name" -> space.getName();
             case "type" -> space.getType() != null ? formatEnum(space.getType().name()) : "";
-            case "capacity" -> String.valueOf(space.getTotalCapacity());
-            case "computers" -> String.valueOf(space.getComputerCount());
+            case "capacity", "totalCapacity" -> String.valueOf(space.getTotalCapacity() != null ? space.getTotalCapacity() : 0);
+            case "computers", "computerCount" -> String.valueOf(space.getComputerCount() != null ? space.getComputerCount() : 0);
             case "status" -> space.getStatus() != null ? formatEnum(space.getStatus().name()) : "";
             case "gisId" -> space.getGisId() != null ? space.getGisId() : "";
             default -> "";
@@ -56,6 +56,6 @@ public class SpaceExportServiceImpl extends BaseCsvExportService<Space> implemen
 
     @Override
     protected List<String> getDefaultColumns() {
-        return Arrays.asList("name", "type", "capacity", "status", "gisId");
+        return Arrays.asList("name", "type", "totalCapacity", "status", "gisId");
     }
 }

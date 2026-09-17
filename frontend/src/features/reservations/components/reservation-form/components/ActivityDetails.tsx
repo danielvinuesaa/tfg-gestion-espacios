@@ -91,6 +91,14 @@ const ActivityDetails = ({
                     <Select
                         value={formData.type || ''}
                         label="Tipo de Actividad"
+                        displayEmpty
+                        renderValue={(selected) => {
+                            if (!selected) {
+                                return <Typography sx={{ opacity: 0.42 }}>Seleccionar tipo...</Typography>;
+                            }
+                            const optionMap: Record<string, string> = { CLASE: 'Clase', EXAMEN: 'Examen', OTRO: 'Otro' };
+                            return optionMap[selected as string] || selected;
+                        }}
                         onChange={(e) => setFormData({ type: e.target.value as ReservationType })}
                         onBlur={() => handleBlur('type')}
                         startAdornment={
@@ -99,6 +107,9 @@ const ActivityDetails = ({
                             </InputAdornment>
                         }
                     >
+                        <MenuItem value="" disabled sx={{ display: 'none' }}>
+                            Seleccionar tipo...
+                        </MenuItem>
                         <MenuItem value="CLASE">Clase</MenuItem>
                         <MenuItem value="EXAMEN">Examen</MenuItem>
                         <MenuItem value="OTRO">Otro</MenuItem>

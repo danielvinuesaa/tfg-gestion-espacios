@@ -1,6 +1,7 @@
 import { Container, Typography, Box, Grid } from '@mui/material';
 import { useSettings } from '../../../context/SettingsContext';
 import { useAvailabilitySearch } from '../hooks/useAvailabilitySearch';
+import { useSnackbar } from '../../../context/SnackbarContext';
 
 // Sub-componentes modulares
 import SearchFilters from '../components/availability/SearchFilters';
@@ -19,6 +20,7 @@ import ReservationForm from '../../reservations/components/reservation-form/Rese
  */
 const AvailabilitySearchPage = () => {
     const { timeSettings } = useSettings();
+    const { showSnackbar } = useSnackbar();
 
     const {
         filters, setFilters, appliedFilters,
@@ -99,9 +101,9 @@ const AvailabilitySearchPage = () => {
                 <ReservationForm 
                     open={reservationFormOpen} 
                     handleClose={handleCloseReservationForm} 
-                    onSuccess={() => {
+                    onSuccess={(msg) => {
                         handleCloseReservationForm();
-                        // Refrescar u otra acción si fuera necesaria
+                        showSnackbar(msg, 'success');
                     }} 
                     initialSlot={reservationSlot} 
                 />

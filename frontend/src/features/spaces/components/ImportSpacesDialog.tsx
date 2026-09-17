@@ -40,6 +40,14 @@ interface ImportConflict {
     currentCapacity: number;
     /** Estado actual en el sistema. */
     currentStatus: string;
+    /** Ordenadores propuestos. */
+    computers?: number;
+    /** Ordenadores actuales. */
+    currentComputers?: number;
+    /** ID GIS propuesto. */
+    gisId?: string;
+    /** ID GIS actual. */
+    currentGisId?: string;
     /** Indica si el espacio tiene reservas asociadas. */
     hasReservations: boolean;
     /** Indica si el espacio puede ser sobreescrito sin riesgo. */
@@ -76,20 +84,23 @@ const ImportSpacesDialog = ({ open, handleClose, onSuccess }: ImportSpacesDialog
             import: '/api/spaces/import'
         },
         queryKey: ['/api/spaces'],
-        csvFormat: "Nombre; Tipo; Capacidad; Estado; ID GIS",
+        csvFormat: "Nombre; Tipo; Capacidad; Ordenadores; Estado; ID GIS",
         instructions: [
             `Tipos válidos: ${typesList}`,
             "Capacidad: Debe ser un número entero mayor o igual a 1.",
-            "Estado (opcional): Disponible, Eliminado (por defecto: Disponible)",
+            "Ordenadores: Número de ordenadores (opcional, por defecto 0).",
+            "Estado (opcional): Disponible, Eliminado (por defecto: Disponible).",
             "ID GIS (opcional): Identificador técnico para integración con mapas",
             "Política: Los espacios existentes se pueden actualizar si no tienen reservas."
         ],
         renderConflictRow: (c: ImportConflict) => {
             const hasTypeChange = c.type !== c.currentType;
             const hasCapacityChange = c.capacity !== c.currentCapacity;
+            const hasComputersChange = c.computers !== c.currentComputers;
             const hasStatusChange = c.status !== c.currentStatus;
+            const hasGisChange = c.gisId !== c.currentGisId;
             
-            const hasAnyChange = hasTypeChange || hasCapacityChange || hasStatusChange;
+            const hasAnyChange = hasTypeChange || hasCapacityChange || hasComputersChange || hasStatusChange || hasGisChange;
 
             return {
                 identity: (
@@ -110,9 +121,19 @@ const ImportSpacesDialog = ({ open, handleClose, onSuccess }: ImportSpacesDialog
                                 <strong>Capacidad:</strong> {c.currentCapacity} → {c.capacity}
                             </Typography>
                         )}
+                        {hasComputersChange && (
+                            <Typography variant="caption" display="block" color="textSecondary">
+                                <strong>Ordenadores:</strong> {c.currentComputers || 0} → {c.computers || 0}
+                            </Typography>
+                        )}
                         {hasStatusChange && (
                             <Typography variant="caption" display="block" color="textSecondary">
                                 <strong>Estado:</strong> {c.currentStatus} → {c.status}
+                            </Typography>
+                        )}
+                        {hasGisChange && (
+                            <Typography variant="caption" display="block" color="textSecondary">
+                                <strong>GIS:</strong> {c.currentGisId || 'Ninguno'} → {c.gisId || 'Ninguno'}
                             </Typography>
                         )}
                         {!hasAnyChange && (

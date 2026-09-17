@@ -75,7 +75,7 @@ export const useAvailabilitySearch = () => {
         dailyEnd: null as Date | null,
         durationHours: 1,
         includeWeekends: false,
-        minCapacity: '',
+        minCapacity: '1',
         distributionRatio: 1.0,
         types: [] as string[]
     }), []);

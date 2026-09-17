@@ -29,6 +29,7 @@ interface SpaceTableProps {
     direction: 'asc' | 'desc';
     handleSort: (field: string) => void;
     canManage: boolean;
+    canViewCalendar: boolean;
     canEdit: boolean;
     canDelete: boolean;
     handleAction: (action: any, space?: Space) => void;
@@ -50,7 +51,7 @@ interface SpaceTableProps {
  */
 const SpaceTable: React.FC<SpaceTableProps> = ({ 
     spaces, totalElements, rowsPerPage, page, setPage, setRowsPerPage, 
-    sortBy, direction, handleSort, canManage, canEdit, canDelete, handleAction,
+    sortBy, direction, handleSort, canManage, canViewCalendar, canEdit, canDelete, handleAction,
     selectedIds, onSelectAll, onSelectOne, loading, error
 }) => {
 
@@ -126,8 +127,11 @@ const SpaceTable: React.FC<SpaceTableProps> = ({
                         </span>
                     </Tooltip>
                 )
-            },
-            {
+            }
+        ];
+
+        if (canViewCalendar) {
+            cols.push({
                 id: 'calendar',
                 label: 'Calendario',
                 align: 'center',
@@ -142,8 +146,8 @@ const SpaceTable: React.FC<SpaceTableProps> = ({
                         </IconButton>
                     </Tooltip>
                 )
-            }
-        ];
+            });
+        }
 
         if (canManage) {
             cols.push({
@@ -162,7 +166,7 @@ const SpaceTable: React.FC<SpaceTableProps> = ({
         }
 
         return cols;
-    }, [canManage, canEdit, canDelete, handleAction]);
+    }, [canManage, canViewCalendar, canEdit, canDelete, handleAction]);
 
     return (
         <DataTable

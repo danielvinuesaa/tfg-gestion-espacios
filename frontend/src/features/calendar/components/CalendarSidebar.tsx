@@ -107,14 +107,31 @@ const CalendarSidebar = ({
         'tipos': true
     });
 
+    const formatSpaceType = (type: string) => {
+        const map: Record<string, string> = {
+            'AULA': 'Aula',
+            'LABORATORIO': 'Laboratorio',
+            'SALA_ESTUDIO': 'Sala de Estudio',
+            'SEMINARIO': 'Seminario',
+            'SALON_ACTOS': 'Salón de Actos',
+            'DESPACHO': 'Despacho',
+            'SALA_REUNIONES': 'Sala de Reuniones',
+        };
+        if (map[type]) return map[type];
+        return type.split('_').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
+    };
+
     /**
      * Lógica de agrupación de espacios:
-     * Ordena alfabéticamente y agrupa por el campo 'type' del espacio.
+     * Ordena alfabéticamente y agrupa por el campo 'type' del espacio (formateado).
      */
     const groupedSpaces = useMemo(() => {
         const sortedSpaces = [...spaces].sort((a, b) => a.name.localeCompare(b.name));
         const grouped = sortedSpaces.reduce((acc, space) => {
-            const type = space.type || 'Otros';
+            const rawType = space.type || 'OTROS';
+            const type = formatSpaceType(rawType);
             if (!acc[type]) acc[type] = [];
             acc[type].push(space);
             return acc;

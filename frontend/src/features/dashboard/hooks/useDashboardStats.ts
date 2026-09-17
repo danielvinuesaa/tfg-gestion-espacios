@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useApi } from '../../../shared/utils/api';
 import { useSettings } from '../../../context/SettingsContext';
+import { useAuth } from '../../../context/AuthContext';
 import { subDays, format } from 'date-fns';
 
 /**
@@ -75,6 +76,8 @@ export const useDashboardStats = () => {
         return { startISO, endISO };
     }, [dateRange, startHour, endHour]);
 
+    const { user } = useAuth();
+
     const { 
         data: stats = null, 
         isLoading: loading, 
@@ -82,7 +85,7 @@ export const useDashboardStats = () => {
         error, 
         refetch 
     } = useQuery<StatsData>({
-        queryKey: ['/api/stats', queryRange],
+        queryKey: ['/api/stats', queryRange, user?.role],
         queryFn: () => request(`/api/stats?startDate=${queryRange.startISO}&endDate=${queryRange.endISO}`),
         staleTime: 60 * 1000, // Los datos se consideran frescos durante 1 minuto
     });

@@ -58,6 +58,8 @@ interface CalendarDialogsProps {
     onApprove: (reservationId: number) => Promise<boolean>;
     /** Función para confirmar la modificación temporal de un evento. */
     onConfirmAction: () => void;
+    /** ID del evento que está siendo sincronizado con el backend actualmente. */
+    syncingEventId?: number | null;
 }
 
 /**
@@ -77,7 +79,8 @@ const CalendarDialogs: React.FC<CalendarDialogsProps> = ({
     onFetchReservations,
     onShowSnackbar,
     onApprove,
-    onConfirmAction
+    onConfirmAction,
+    syncingEventId
 }) => {
     
     const handleSuccess = (msg: string, modalKey: keyof CalendarModalData) => {
@@ -121,6 +124,7 @@ const CalendarDialogs: React.FC<CalendarDialogsProps> = ({
                 newStart={modals.getData('confirmAction')?.start || null} 
                 newEnd={modals.getData('confirmAction')?.end || null}
                 actionType={modals.getData('confirmAction')?.type || 'MOVE'}
+                isSyncing={modals.getData('confirmAction')?.event?.id === syncingEventId}
             />
 
             {/* Formulario de Nueva Reserva */}

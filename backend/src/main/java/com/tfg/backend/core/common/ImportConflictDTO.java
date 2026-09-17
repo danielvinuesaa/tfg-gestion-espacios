@@ -41,6 +41,11 @@ public class ImportConflictDTO {
     private String status;
 
     /**
+     * Número de ordenadores propuesto.
+     */
+    private Integer computers;
+
+    /**
      * Identificador GIS propuesto en el fichero de importación.
      */
     private String gisId;
@@ -59,6 +64,11 @@ public class ImportConflictDTO {
      * Estado actual del recurso almacenado en la base de datos.
      */
     private String currentStatus;
+
+    /**
+     * Número de ordenadores actual.
+     */
+    private Integer currentComputers;
 
     /**
      * Identificador GIS actual del recurso almacenado en la base de datos.

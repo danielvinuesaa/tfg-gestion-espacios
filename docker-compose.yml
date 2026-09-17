@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: tfg_db
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - ./docker/postgres/data:/var/lib/postgresql/data
 
@@ -22,7 +22,7 @@ services:
       - ./backend:/app
       - maven_data:/root/.m2
     ports:
-      - "8080:8080"
+      - "${BACKEND_PORT:-8080}:8080"
     depends_on:
       - db
     environment:
@@ -38,9 +38,9 @@ services:
       - ./frontend:/app
       - /app/node_modules
     ports:
-      - "5173:5173"
+      - "${FRONTEND_PORT:-5173}:5173"
     environment:
-      - VITE_API_URL=http://localhost:8080/api
+      - VITE_API_URL=http://localhost:${BACKEND_PORT:-8080}/api
     depends_on:
       - backend
 
@@ -48,8 +48,8 @@ services:
     image: mailhog/mailhog
     container_name: tfg-mailhog
     ports:
-      - "1025:1025" # SMTP port
-      - "8025:8025" # Web UI port
+      - "${MAIL_SMTP_PORT:-1025}:1025" # SMTP port
+      - "${MAIL_WEB_PORT:-8025}:8025" # Web UI port
 
 volumes:
   maven_data:
